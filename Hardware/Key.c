@@ -1,5 +1,4 @@
 #include "stm32f10x.h" // Device header
-#include "Encoder.h"
 
 extern float pid_param[3];
 extern uint8_t menu_state;

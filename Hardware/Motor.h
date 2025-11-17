@@ -1,7 +1,21 @@
 #ifndef __MOTOR_H
 #define __MOTOR_H
 
-void PWM_Init(void)
+// 电机引脚定义
+#define LEFT_MOTOR_AIN1_PIN    GPIO_Pin_12
+#define LEFT_MOTOR_AIN1_PORT   GPIOB
+#define LEFT_MOTOR_AIN2_PIN    GPIO_Pin_13
+#define LEFT_MOTOR_AIN2_PORT   GPIOB
+#define LEFT_MOTOR_PWMA_PIN    GPIO_Pin_2
+#define LEFT_MOTOR_PWMA_PORT   GPIOA
 
+#define RIGHT_MOTOR_BIN1_PIN   GPIO_Pin_14
+#define RIGHT_MOTOR_BIN1_PORT  GPIOB
+#define RIGHT_MOTOR_BIN2_PIN   GPIO_Pin_15
+#define RIGHT_MOTOR_BIN2_PORT  GPIOB
+#define RIGHT_MOTOR_PWMB_PIN   GPIO_Pin_3
+#define RIGHT_MOTOR_PWMB_PORT  GPIOA
+
+void Motor_Init(void);
 
 #endif
