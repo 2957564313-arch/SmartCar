@@ -319,3 +319,33 @@ void OLED_Init(void)
 		
 	OLED_Clear();				//OLED清屏
 }
+
+void OLED_ShowFloat(uint8_t Line, uint8_t Column, float Number, uint8_t IntLength, uint8_t FracLength)
+{
+    char buffer[16];
+    
+    // 更安全的方法：使用整数运算来处理浮点数显示
+    // 先将浮点数转换为整数进行精确计算
+    int32_t scaled_value;
+    
+    if (Number < 0) {
+        OLED_ShowChar(Line, Column, '-');
+        Number = -Number;
+        Column++;
+    }
+    
+    // 方法1：使用整数运算避免浮点误差
+    scaled_value = (int32_t)(Number * OLED_Pow(10, FracLength) + 0.5f); // 四舍五入
+    
+    uint32_t intPart = scaled_value / OLED_Pow(10, FracLength);
+    uint32_t fracPart = scaled_value % OLED_Pow(10, FracLength);
+    
+    // 显示整数部分
+    OLED_ShowNum(Line, Column, intPart, IntLength);
+    
+    // 显示小数点
+    OLED_ShowChar(Line, Column + IntLength, '.');
+    
+    // 显示小数部分，确保显示正确的位数
+    OLED_ShowNum(Line, Column + IntLength + 1, fracPart, FracLength);
+}
