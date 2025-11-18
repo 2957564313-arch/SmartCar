@@ -27,9 +27,9 @@ void Show_PID_Menu(void)
 	OLED_ShowString(2,2,"kp");
 	OLED_ShowString(3,2,"ki");
 	OLED_ShowString(4,2,"kd");
-	OLED_ShowFloat(2,13,kp,1,1);
-	OLED_ShowFloat(3,13,ki,1,1);
-	OLED_ShowFloat(4,13,kd,1,1);
+	OLED_ShowFloat(2,13,line_pid.kp,1,1);
+	OLED_ShowFloat(3,13,line_pid.ki,1,1);
+	OLED_ShowFloat(4,13,line_pid.kd,1,1);
 	
 	if(edit_mode)
 		OLED_ShowChar(1,15,'E');
@@ -93,18 +93,18 @@ void Handle_Key(uint8_t key)
 					{
 						switch (cursor_pos)
 						{
-							case 2:kp+=0.1;break;
-							case 3:ki+=0.1;break;
-							case 4:kd+=0.1;break;
+							case 2:line_pid.kp+=0.1;break;
+							case 3:line_pid.ki+=0.1;break;
+							case 4:line_pid.kd+=0.1;break;
 						}
 					}
 					else if(key == 2)
 					{
 						switch (cursor_pos)
 						{
-							case 2:kp-=0.1;break;
-							case 3:ki-=0.1;break;
-							case 4:kd-=0.1;break;
+							case 2:line_pid.kp-=0.1;break;
+							case 3:line_pid.ki-=0.1;break;
+							case 4:line_pid.kd-=0.1;break;
 						}
 					}
 				}

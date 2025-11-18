@@ -11,7 +11,6 @@
 
 int main(void)
 {
-    USART1_Init();
     Motor_Init();
     Sensor_Init();
     Encoder_Init();      // 新增编码器初始化
