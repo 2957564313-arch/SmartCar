@@ -1,74 +1,37 @@
 #include "stm32f10x.h" // Device header
-
-extern float pid_param[3];
-extern uint8_t menu_state;
-extern uint8_t edit_mode;
-
+#include "PID.h"
+#include "Menu.h"
 
 static uint8_t key_pressed = 0;	//当前按下的按键
-
+static uint8_t key_count[4] = {0};      // 按键计数器
+static uint8_t last_state[4] = {1,1,1,1}; // 上一次状态
+static uint16_t press_time[4] = {0};	//按键按下时间计数器
+static uint8_t long_press_flag[4] ={0};	//长按标志
+	
+uint8_t current_state[4];
 
 void Time_Key_Init(void)
 {
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOC,ENABLE);
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2,ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB|RCC_APB2Periph_GPIOC,ENABLE);
 	
 	GPIO_InitTypeDef GPIO_InitStructure;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;	
-	GPIO_InitStructure.GPIO_Pin =GPIO_Pin_0 |GPIO_Pin_2|GPIO_Pin_4 ;
+	GPIO_InitStructure.GPIO_Pin =GPIO_Pin_13 |GPIO_Pin_14|GPIO_Pin_15 ; //PC13-UP PC14-DOWN PC15-OK
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz ;
-	GPIO_Init(GPIOA,&GPIO_InitStructure);
-	
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;
 	GPIO_Init(GPIOC,&GPIO_InitStructure);
 	
-	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
-	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseInitStructure.TIM_Period =1000-1 ;//1ms
-	TIM_TimeBaseInitStructure.TIM_Prescaler = 72-1;
-	TIM_TimeBaseInitStructure.TIM_RepetitionCounter =0 ;
-	TIM_TimeBaseInit(TIM2,&TIM_TimeBaseInitStructure);
-	
-	TIM_ITConfig(TIM2,TIM_IT_Update,ENABLE);
-	
-	
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-	
-	NVIC_InitTypeDef NVIC_InitStruture;
-	NVIC_InitStruture.NVIC_IRQChannel = TIM2_IRQn;
-	NVIC_InitStruture.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_InitStruture.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStruture.NVIC_IRQChannelSubPriority =0 ;
-	NVIC_Init(&NVIC_InitStruture);
-		
-	TIM_Cmd(TIM2,ENABLE);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;			//PB0-BACK
+	GPIO_Init(GPIOB,&GPIO_InitStructure);
+
 }
 
 uint8_t KEY_GetKey(void)
 {
-	uint8_t key = key_pressed;
-	key_pressed = 0;	//读取后清零
-	return key;
-}
-
-void TIM2_IRQHandler(void)
-{
-    static uint8_t key_count[4] = {0};      // 按键计数器
-    static uint8_t last_state[4] = {1,1,1,1}; // 上一次状态
-	static uint16_t press_time[4] = {0};	//按键按下时间计数器
-	static uint8_t long_press_flag[4] ={0};	//长按标志
-	
-    uint8_t current_state[4];
-	
-    
-    if(TIM_GetITStatus(TIM2, TIM_IT_Update) == SET)
-    {
-        // 读取按键状态
-        current_state[0] = GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_4);  // 上键
-        current_state[1] = GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2);  // 下键
-        current_state[2] = GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0);  // 确认键
-        current_state[3] = GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_14); // 返回键
+		// 读取按键状态
+        current_state[0] = GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13);  // 上键
+        current_state[1] = GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_14);  // 下键
+        current_state[2] = GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_15);  // 确认键
+        current_state[3] = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_0); // 返回键
         
         for(int i = 0; i < 4; i++)
         {
@@ -133,7 +96,8 @@ void TIM2_IRQHandler(void)
 			}
             
         }
-        
-        TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
-    }
+	uint8_t key = key_pressed;
+	key_pressed = 0;	//读取后清零
+	
+	return key;
 }

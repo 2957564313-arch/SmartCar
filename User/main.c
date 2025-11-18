@@ -9,12 +9,11 @@
 
 int main(void)
 {
-    OLED_Init();
-    Encoder_Init();
-    PWM_Init();
-    
     while(1)
     {
-       
+       uint8_t key = KEY_GetKey();	//获取按键
+		
+		if(key != 0)
+			Handle_Key(key);	//处理按键
     }
 }
