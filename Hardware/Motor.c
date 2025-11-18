@@ -1,5 +1,7 @@
-#include "stm32f10x.h"
+#include "stm32f10x.h"                  // Device header
 #include "Motor.h"
+#include <stdlib.h>
+
 /**
   * @brief  电机初始化
   */
@@ -29,8 +31,8 @@ void Motor_Init(void)
     GPIO_Init(GPIOA, &GPIO_InitStructure);
     
     // 初始化TIM2用于PWM输出
-    TIM_TimeBaseStructure.TIM_Period = 199;
-    TIM_TimeBaseStructure.TIM_Prescaler = 719;
+    TIM_TimeBaseStructure.TIM_Period = 200 - 1;
+    TIM_TimeBaseStructure.TIM_Prescaler = 720 - 1;
     TIM_TimeBaseStructure.TIM_ClockDivision = 0;
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
     TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
@@ -52,7 +54,57 @@ void Motor_Init(void)
     
     TIM_ARRPreloadConfig(TIM2, ENABLE);
     TIM_Cmd(TIM2, ENABLE);
+}
+
+/**
+  * @brief  设置电机速度
+  * @param  left_speed: 左电机速度(-100~100)
+  * @param  right_speed: 右电机速度(-100~100)
+  */
+void motor(int left_speed, int right_speed)
+{
+    // 限制速度范围
+    if(left_speed > 100) left_speed = 100;
+    if(left_speed < -100) left_speed = -100;
+    if(right_speed > 100) right_speed = 100;
+    if(right_speed < -100) right_speed = -100;
     
-    // 电机初始状态停止
-    Motor_Stop();
+    // 转换为PWM值 (0-199)
+    int left_pwm = abs(left_speed) * 2;
+    int right_pwm = abs(right_speed) * 2;
+    
+    // 左电机控制
+    if(left_speed >= 0) {
+        GPIO_SetBits(LEFT_MOTOR_AIN1_PORT, LEFT_MOTOR_AIN1_PIN);
+        GPIO_ResetBits(LEFT_MOTOR_AIN2_PORT, LEFT_MOTOR_AIN2_PIN);
+        TIM_SetCompare3(TIM2, left_pwm);
+    } else {
+        GPIO_ResetBits(LEFT_MOTOR_AIN1_PORT, LEFT_MOTOR_AIN1_PIN);
+        GPIO_SetBits(LEFT_MOTOR_AIN2_PORT, LEFT_MOTOR_AIN2_PIN);
+        TIM_SetCompare3(TIM2, left_pwm);
+    }
+    
+    // 右电机控制
+    if(right_speed >= 0) {
+        GPIO_SetBits(RIGHT_MOTOR_BIN1_PORT, RIGHT_MOTOR_BIN1_PIN);
+        GPIO_ResetBits(RIGHT_MOTOR_BIN2_PORT, RIGHT_MOTOR_BIN2_PIN);
+        TIM_SetCompare4(TIM2, right_pwm);
+    } else {
+        GPIO_ResetBits(RIGHT_MOTOR_BIN1_PORT, RIGHT_MOTOR_BIN1_PIN);
+        GPIO_SetBits(RIGHT_MOTOR_BIN2_PORT, RIGHT_MOTOR_BIN2_PIN);
+        TIM_SetCompare4(TIM2, right_pwm);
+    }
+}
+
+/**
+  * @brief  停止电机
+  */
+void Motor_Stop(void)
+{
+    GPIO_ResetBits(LEFT_MOTOR_AIN1_PORT, LEFT_MOTOR_AIN1_PIN);
+    GPIO_ResetBits(LEFT_MOTOR_AIN2_PORT, LEFT_MOTOR_AIN2_PIN);
+    GPIO_ResetBits(RIGHT_MOTOR_BIN1_PORT, RIGHT_MOTOR_BIN1_PIN);
+    GPIO_ResetBits(RIGHT_MOTOR_BIN2_PORT, RIGHT_MOTOR_BIN2_PIN);
+    TIM_SetCompare3(TIM2, 0);
+    TIM_SetCompare4(TIM2, 0);
 }

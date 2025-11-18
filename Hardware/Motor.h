@@ -17,5 +17,7 @@
 #define RIGHT_MOTOR_PWMB_PORT  GPIOA
 
 void Motor_Init(void);
+void motor(int left_speed, int right_speed);
+void Motor_Stop(void);
 
 #endif
