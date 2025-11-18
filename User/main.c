@@ -6,9 +6,17 @@
 #include "Sensor.h"
 #include "Menu.h"
 #include "Motor.h"
+#include "line_tracking.h"
+#include "Serial.h"
 
 int main(void)
 {
+    USART1_Init();
+    Motor_Init();
+    Sensor_Init();
+    Encoder_Init();      // 新增编码器初始化
+    Time_Key_Init();
+    OLED_Init();
     while(1)
     {
        uint8_t key = KEY_GetKey();	//获取按键

@@ -11,6 +11,7 @@
 extern unsigned char lukou_num;
 extern unsigned char last_line_status;
 extern unsigned int straight_count;
+extern PID_TypeDef line_pid;
 
 // 函数声明
 void Track_Init(void);

@@ -4,6 +4,7 @@
 #include "Motor.h"
 #include "Delay.h"
 #include "Serial.h"
+#include "PID.h"
 
 // 全局变量定义
 unsigned char lukou_num = 0;
