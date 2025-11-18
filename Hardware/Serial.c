@@ -1,85 +1,68 @@
 #include "stm32f10x.h"                  // Device header
 #include <stdio.h>
 #include <stdarg.h>
+#include "Serial.h"
 
-uint8_t Serial_RxData;
-uint8_t Serial_RxFlag;
-
-void Serial_Init(void)
+void USART1_Init(void)
 {
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1,ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
-	
-	GPIO_InitTypeDef GPIO_InitStruture;
-	GPIO_InitStruture.GPIO_Mode = GPIO_Mode_AF_PP;
-	GPIO_InitStruture.GPIO_Pin =GPIO_Pin_9 ;
-	GPIO_InitStruture.GPIO_Speed =GPIO_Speed_50MHz ;
-	GPIO_Init(GPIOA,&GPIO_InitStruture);
-	
-	GPIO_InitStruture.GPIO_Mode = GPIO_Mode_IPU;
-	GPIO_InitStruture.GPIO_Pin =GPIO_Pin_10 ;
-	GPIO_InitStruture.GPIO_Speed =GPIO_Speed_50MHz ;
-	GPIO_Init(GPIOA,&GPIO_InitStruture);
-	
-	USART_InitTypeDef USART_InitStruture;
-	USART_InitStruture.USART_BaudRate =9600 ;
-	USART_InitStruture.USART_HardwareFlowControl =USART_HardwareFlowControl_None ;
-	USART_InitStruture.USART_Mode =USART_Mode_Tx|USART_Mode_Rx ;
-	USART_InitStruture.USART_Parity = USART_Parity_No;
-	USART_InitStruture.USART_StopBits = USART_StopBits_1;
-	USART_InitStruture.USART_WordLength = USART_WordLength_8b;
-	USART_Init(USART1,&USART_InitStruture);
-	
-	USART_ITConfig(USART1,USART_IT_RXNE,ENABLE);
-	
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-	
-	NVIC_InitTypeDef NVIC_InitStruture;
-	NVIC_InitStruture.NVIC_IRQChannel =USART1_IRQn ;
-	NVIC_InitStruture.NVIC_IRQChannelCmd =ENABLE ;
-	NVIC_InitStruture.NVIC_IRQChannelPreemptionPriority = 1;
-	NVIC_InitStruture.NVIC_IRQChannelSubPriority =1 ;
-	NVIC_Init(&NVIC_InitStruture);
-	
-	USART_Cmd(USART1,ENABLE);
-	
+    GPIO_InitTypeDef GPIO_InitStructure;
+    USART_InitTypeDef USART_InitStructure;
+    
+    // 开启时钟
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_USART1, ENABLE);
+    
+    // 配置TX引脚 (PA9) - 复用推挽输出
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+    // 配置RX引脚 (PA10) - 浮空输入
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+    // 串口配置
+    USART_InitStructure.USART_BaudRate = 115200;
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+    USART_InitStructure.USART_StopBits = USART_StopBits_1;
+    USART_InitStructure.USART_Parity = USART_Parity_No;
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+    USART_Init(USART1, &USART_InitStructure);
+    
+    // 启动串口
+    USART_Cmd(USART1, ENABLE);
 }
 
-uint8_t Serial_GetRxFlag(void)
+/**
+  * @brief  发送一个字节
+  * @param  byte: 要发送的字节
+  */
+void USART1_SendByte(uint8_t byte)
 {
-	if(Serial_RxFlag == 1)
-	{
-		Serial_RxFlag = 0;
-		return 1;
-	}
-	return 0;
+    USART_SendData(USART1, byte);
+    while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
 }
 
-uint8_t Serial_GetRxData(void)
+/**
+  * @brief  发送字符串
+  * @param  str: 要发送的字符串
+  */
+void USART1_SendString(char *str)
 {
-	return Serial_RxData;
+    while(*str)
+    {
+        USART1_SendByte(*str++);
+    }
 }
 
-
-void USART1_IRQHandler(void)
+/**
+  * @brief  重定向printf到串口
+  */
+int fputc(int ch, FILE *f)
 {
-	if(USART_GetITStatus(USART1,USART_IT_RXNE) == SET )
-	{
-		Serial_RxData = USART_ReceiveData(USART1);
-		Serial_RxFlag = 1;
-		USART_ClearITPendingBit(USART1,USART_IT_RXNE);
-	}
-}
-
-void Serial_SendByte(uint8_t Byte)
-{
-	USART_SendData(USART1,Byte);	//发送以后还要等待一下标志位
-	while(USART_GetFlagStatus(USART1,USART_FLAG_TXE) == RESET);		//这里的标志位无需手动清零,会自动清零
-	
-}
-
-int fputc(int ch,FILE *f)		//参数照这样写就好了，不用管那么多
-{
-	Serial_SendByte(ch);
-	return ch;
+    USART_SendData(USART1, (uint8_t)ch);
+    while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+    return ch;
 }
