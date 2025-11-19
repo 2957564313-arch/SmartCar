@@ -9,6 +9,10 @@
 unsigned char lukou_num = 0;
 unsigned char last_line_status = 5; // 初始状态设为居中
 
+// 保护变量
+static uint32_t lost_line_timer = 0;
+static uint8_t protection_enabled = 1;
+
 /**
   * @brief  循迹系统初始化
   */
@@ -16,7 +20,36 @@ void Track_Init(void)
 {
     lukou_num = 0;
     last_line_status = 5;
+    lost_line_timer = 0;
     PID_Reset(&line_pid); // 重置PID
+}
+
+/**
+  * @brief  线路保护检查
+  * @return 1:需要停止, 0:正常
+  */
+uint8_t Line_Protection_Check(void)
+{
+    if(!protection_enabled) return 0;
+    
+    unsigned char line_status = Get_Line_Status();
+    
+    // 如果完全丢失线路，开始计时
+    if(line_status == 10)  // 00000 - 丢失路线
+    {
+        lost_line_timer += 10;  // 假设每10ms调用一次
+        
+        if(lost_line_timer > 3000)  // 丢失3秒
+        {
+            return 1;
+        }
+    }
+    else
+    {
+        lost_line_timer = 0;  // 重置计时器
+    }
+    
+    return 0;
 }
 
 /**
@@ -33,7 +66,8 @@ void Handle_Crossroad(void)
     
     // 重置PID控制器
     PID_Reset(&line_pid);
-
+    
+    printf("Crossroad passed! Count: %d\r\n", lukou_num);
 }
 
 /**
@@ -48,9 +82,11 @@ void Handle_Sharp_Turn(void)
         if(L2 == 1) { // 左急弯
             motor(25, 70);
             Delay_ms(SHARP_TURN_DELAY);
+            printf("Sharp left turn!\r\n");
         } else { // 右急弯
             motor(70, 25);
             Delay_ms(SHARP_TURN_DELAY);
+            printf("Sharp right turn!\r\n");
         }
     }
 }
@@ -110,6 +146,7 @@ void Track_Straight_Line(void)
         case 11: // 全黑线 (11111)
             motor(0, 0);
             Delay_ms(2000);
+            printf("Stop line detected!\r\n");
             break;
         default:
             motor(50, 50);
@@ -167,7 +204,6 @@ void Track_With_PID(void)
     
     motor(left_speed, right_speed);
     last_line_status = line_status;
-    
 }
 
 /**
@@ -175,6 +211,13 @@ void Track_With_PID(void)
   */
 void Advanced_Tracking(void)
 {
+    // 先检查保护
+    if(Line_Protection_Check())
+    {
+        Motor_Stop();
+        return;
+    }
+    
     unsigned char line_status = Get_Line_Status();
     
     // 优先处理特殊状况

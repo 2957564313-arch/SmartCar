@@ -21,5 +21,6 @@ void Track_With_PID(void);
 void Handle_Crossroad(void);
 void Handle_Sharp_Turn(void);
 void Advanced_Tracking(void);
+uint8_t Line_Protection_Check(void);
 
 #endif
