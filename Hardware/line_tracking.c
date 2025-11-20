@@ -66,8 +66,7 @@ void Handle_Crossroad(void)
     
     // 重置PID控制器
     PID_Reset(&line_pid);
-    
-    printf("Crossroad passed! Count: %d\r\n", lukou_num);
+   
 }
 
 /**
@@ -82,11 +81,11 @@ void Handle_Sharp_Turn(void)
         if(L2 == 1) { // 左急弯
             motor(25, 70);
             Delay_ms(SHARP_TURN_DELAY);
-            printf("Sharp left turn!\r\n");
+ 
         } else { // 右急弯
             motor(70, 25);
             Delay_ms(SHARP_TURN_DELAY);
-            printf("Sharp right turn!\r\n");
+
         }
     }
 }
@@ -146,7 +145,6 @@ void Track_Straight_Line(void)
         case 11: // 全黑线 (11111)
             motor(0, 0);
             Delay_ms(2000);
-            printf("Stop line detected!\r\n");
             break;
         default:
             motor(50, 50);

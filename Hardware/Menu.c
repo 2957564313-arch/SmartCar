@@ -1,9 +1,13 @@
 #include "stm32f10x.h"                  // Device header
-#include "Menu.h"
 #include "OLED.h"
 #include "Key.h"
 #include "PID.h"
+#include "Menu.h"
 
+// 全局变量
+SystemState_t system_state = SYSTEM_MENU;
+uint8_t car_started = 0;
+uint8_t launch_confirmed = 0;  // 发车确认标志
 uint8_t menu_state = 0;	//0=主菜单,1=发车功能,2=PID调试
 uint8_t cursor_pos = 1;	//光标位置
 uint8_t edit_mode = 0;	//0=浏览，1=编辑
@@ -55,12 +59,17 @@ void Handle_Key(uint8_t key)
 			if(cursor_pos == 1)
 			{
 				//这里写发车功能//
+				system_state = SYSTEM_RUNNING; //系统状态为发车状态
+				menu_state = 1;
+				OLED_Clear();
+				
 			}
 			if(cursor_pos == 2)
 			{
 				menu_state = 2;		//进入pid调试界面
+				cursor_pos = 2;
 			}
-			cursor_pos = 2;
+			
 		}	
 			
 	}

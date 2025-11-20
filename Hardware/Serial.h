@@ -6,6 +6,5 @@
 void USART1_Init(void);
 void USART1_SendByte(uint8_t byte);
 void USART1_SendString(char *str);
-int fputc(int ch, FILE *f);
 
 #endif
