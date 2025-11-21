@@ -6,11 +6,11 @@
 #define L2_PORT   GPIOA
 #define L1_PIN    GPIO_Pin_1
 #define L1_PORT   GPIOA  
-#define M_PIN    GPIO_Pin_4   // 中间传感器
-#define M_PORT   GPIOA
+#define M_PIN     GPIO_Pin_4   // 中间传感器
+#define M_PORT    GPIOA
 #define R1_PIN    GPIO_Pin_5
 #define R1_PORT   GPIOA
-#define R2_PIN    GPIO_Pin_8   // 最右边传感器
+#define R2_PIN    GPIO_Pin_15  // 最右边传感器（修改为PA15）
 #define R2_PORT   GPIOA
 
 // 传感器数量

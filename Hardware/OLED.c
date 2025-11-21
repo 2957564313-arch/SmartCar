@@ -349,3 +349,19 @@ void OLED_ShowFloat(uint8_t Line, uint8_t Column, float Number, uint8_t IntLengt
     // 显示小数部分，确保显示正确的位数
     OLED_ShowNum(Line, Column + IntLength + 1, fracPart, FracLength);
 }
+
+/**
+  * @brief  关闭OLED显示
+  */
+void OLED_Off(void)
+{
+    OLED_WriteCommand(0xAE); // 关闭显示
+}
+
+/**
+  * @brief  开启OLED显示
+  */
+void OLED_On(void)
+{
+    OLED_WriteCommand(0xAF); // 开启显示
+}
