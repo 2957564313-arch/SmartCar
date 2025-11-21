@@ -4,11 +4,11 @@
 #include "stm32f10x.h"
 #include "pid.h"
 
-// 循迹参数配置 (针对18mm赛道)
-#define STRAIGHT_SPEED       60   // 直道速度
-#define TURN_SPEED          45   // 弯道速度
-#define CROSS_DELAY         300  // 十字路口直行时间(ms)
-#define SHARP_TURN_DELAY    150  // 急弯转向时间(ms)
+// 循迹参数配置 - 激进参数
+#define STRAIGHT_SPEED       40   // 进一步降低速度确保控制
+#define MAX_SPEED           60   
+#define MIN_SPEED           10   // 允许更低的转弯速度
+#define CROSS_DELAY         200  // 缩短十字路口时间
 
 // 全局变量声明
 extern unsigned char lukou_num;
@@ -16,10 +16,6 @@ extern unsigned char last_line_status;
 
 // 函数声明
 void Track_Init(void);
-void Track_Straight_Line(void);
-void Track_With_PID(void);
-void Handle_Crossroad(void);
-void Handle_Sharp_Turn(void);
 void Advanced_Tracking(void);
 uint8_t Line_Protection_Check(void);
 

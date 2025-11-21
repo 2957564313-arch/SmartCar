@@ -11,6 +11,11 @@
 #include "Delay.h"
 #include <stdio.h>
 
+// 全局变量定义
+SystemState_t system_state = SYSTEM_MENU;
+uint8_t car_started = 0;
+uint8_t launch_confirmed = 0;  // 发车确认标志
+
 /**
   * @brief  启动循迹功能
   */
@@ -22,13 +27,11 @@ void Start_Line_Tracking(void)
     
     // 关闭OLED显示以节省CPU
     OLED_Clear();
- 
+    OLED_Off();  // 真正关闭OLED电源
     
     // 重置循迹系统
     Track_Init();
     Encoder_Reset_Both();
-    
-
 }
 
 /**
@@ -41,9 +44,6 @@ void Stop_Line_Tracking(void)
     
     // 停止电机
     Motor_Stop();
-    
-    // 注意：停止后不重新打开OLED，保持关闭状态
-    // 只能通过断电重启来重新进入菜单
 }
 
 /**
@@ -62,21 +62,23 @@ uint8_t Can_Launch(void)
 
 int main(void)
 {
+    // 系统初始化
     Motor_Init();        // 电机初始化
     Sensor_Init();       // 传感器初始化
     Encoder_Init();      // 编码器初始化
     Time_Key_Init();     // 按键初始化
     OLED_Init();         // OLED初始化
-    USART1_Init(); 		 // 串口初始化
-	Show_Main_Menu();
-    
+    USART1_Init();       // 串口初始化
+
+    OLED_Clear();
+    Show_Main_Menu();
+
     while(1)
     {
         uint8_t key = KEY_GetKey();  // 获取按键
         
         if(key != 0)
         {
-           
             // 根据系统状态处理按键
             switch(system_state)
             {
@@ -111,23 +113,11 @@ int main(void)
                 // 运行状态下执行循迹
                 if(car_started)
                 {
-					OLED_Clear();
-             
-					// 读取传感器
+                    // 读取传感器
                     Sensor_Read();
                     
                     // 执行高级循迹算法
                     Advanced_Tracking();
-                    
-                    // 发送调试信息到串口（可选）
-                    static uint32_t debug_timer = 0;
-                    debug_timer++;
-                    if(debug_timer >= 100)  // 每100次循环发送一次
-                    {
-                        printf("L:%d %d %d %d %d Stat:%d\r\n", 
-                               L2, L1, M, R1, R2, Get_Line_Status());
-                        debug_timer = 0;
-                    }
                 }
                 break;
                 

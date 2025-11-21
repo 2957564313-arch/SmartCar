@@ -86,12 +86,12 @@ void motor(int left_speed, int right_speed)
     
     // 右电机控制
     if(right_speed >= 0) {
-        GPIO_SetBits(RIGHT_MOTOR_BIN1_PORT, RIGHT_MOTOR_BIN1_PIN);
-        GPIO_ResetBits(RIGHT_MOTOR_BIN2_PORT, RIGHT_MOTOR_BIN2_PIN);
+        GPIO_SetBits(RIGHT_MOTOR_BIN1_PORT, RIGHT_MOTOR_BIN2_PIN);
+        GPIO_ResetBits(RIGHT_MOTOR_BIN2_PORT, RIGHT_MOTOR_BIN1_PIN);
         TIM_SetCompare4(TIM2, right_pwm);
     } else {
-        GPIO_ResetBits(RIGHT_MOTOR_BIN1_PORT, RIGHT_MOTOR_BIN1_PIN);
-        GPIO_SetBits(RIGHT_MOTOR_BIN2_PORT, RIGHT_MOTOR_BIN2_PIN);
+        GPIO_ResetBits(RIGHT_MOTOR_BIN1_PORT, RIGHT_MOTOR_BIN2_PIN);
+        GPIO_SetBits(RIGHT_MOTOR_BIN2_PORT, RIGHT_MOTOR_BIN1_PIN);
         TIM_SetCompare4(TIM2, right_pwm);
     }
 }

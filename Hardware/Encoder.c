@@ -23,7 +23,7 @@ void Encoder_Init(void)
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(LEFT_ENCODER_A_PORT, &GPIO_InitStructure);
     
-    // 初始化右编码器引脚 (PA8, PA11) - TIM1
+    // 初始化右编码器引脚 (PA8, PA9) - TIM1
     GPIO_InitStructure.GPIO_Pin = RIGHT_ENCODER_A_PIN | RIGHT_ENCODER_B_PIN;
     GPIO_Init(RIGHT_ENCODER_A_PORT, &GPIO_InitStructure);
     
@@ -39,7 +39,7 @@ void Encoder_Init(void)
     TIM_EncoderInterfaceConfig(TIM3, TIM_EncoderMode_TI12, TIM_ICPolarity_Rising, TIM_ICPolarity_Rising);
     TIM_ICInit(TIM3, &TIM_ICInitStructure);
     
-    // 配置TIM1为编码器模式（右电机）
+    // 配置TIM1为编码器模式（右电机）- 使用PA8和PA9
     TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
     TIM_EncoderInterfaceConfig(TIM1, TIM_EncoderMode_TI12, TIM_ICPolarity_Rising, TIM_ICPolarity_Rising);
     TIM_ICInit(TIM1, &TIM_ICInitStructure);

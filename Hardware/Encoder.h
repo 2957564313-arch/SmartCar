@@ -15,10 +15,10 @@ typedef struct {
 #define LEFT_ENCODER_B_PIN     GPIO_Pin_7
 #define LEFT_ENCODER_B_PORT    GPIOA
 
-// 右编码器引脚定义（修改为PA8和PA11）
+// 右编码器引脚定义（修改为PA8和PA9）
 #define RIGHT_ENCODER_A_PIN    GPIO_Pin_8
 #define RIGHT_ENCODER_A_PORT   GPIOA
-#define RIGHT_ENCODER_B_PIN    GPIO_Pin_11
+#define RIGHT_ENCODER_B_PIN    GPIO_Pin_9    // 从PA11改为PA9
 #define RIGHT_ENCODER_B_PORT   GPIOA
 
 // 全局编码器实例

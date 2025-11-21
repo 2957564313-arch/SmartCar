@@ -1,8 +1,8 @@
 #include "stm32f10x.h"
 #include "PID.h"
 
-// 初始化PID参数
-PID_TypeDef line_pid = {3.0f, 0.05f, 0.8f, 0.0f, 0.0f};
+// 初始化PID参数 - 优化参数
+PID_TypeDef line_pid =  {5.0f, 0.02f, 0.5f, 0.0f, 0.0f};
 
 /**
   * @brief  PID计算
@@ -18,10 +18,10 @@ float PID_Calculate(PID_TypeDef *pid, float setpoint, float current_value)
     // 比例项
     float proportional = pid->kp * error;
     
-    // 积分项（简单限幅）
+    // 积分项（带限幅）
     pid->integral += error;
-    if(pid->integral > 100.0f) pid->integral = 100.0f;
-    if(pid->integral < -100.0f) pid->integral = -100.0f;
+    if(pid->integral > 80.0f) pid->integral = 80.0f;
+    if(pid->integral < -80.0f) pid->integral = -80.0f;
     float integral = pid->ki * pid->integral;
     
     // 微分项
@@ -31,8 +31,8 @@ float PID_Calculate(PID_TypeDef *pid, float setpoint, float current_value)
     float output = proportional + integral + derivative;
     
     // 输出限幅
-    if(output > 50.0f) output = 50.0f;
-    if(output < -50.0f) output = -50.0f;
+    if(output > 40.0f) output = 40.0f;
+    if(output < -40.0f) output = -40.0f;
     
     pid->last_error = error;
     
