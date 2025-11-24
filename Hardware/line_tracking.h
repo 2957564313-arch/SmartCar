@@ -2,27 +2,32 @@
 #define __LINE_TRACKING_H
 
 #include "stm32f10x.h"
-#include "pid.h"
+#include "PID.h"
 
-// 循迹参数配置
-#define STRAIGHT_SPEED       50   
-#define MAX_SPEED           75   
-#define MIN_SPEED           20   
-#define CROSS_DELAY         250  // 十字路口直行时间
+// ================== 速度参数（可根据实际微调） ==================
+#define STRAIGHT_SPEED       100    // 直线基础速度
+#define MAX_SPEED            100   // motor() 的最大速度（对应 PWM 100）
+#define MIN_SPEED            0     // 最低速度（弯道内侧轮可降到 0）
+#define CORNER_SPEED_MIN     28    // 弯道时的最低基础速度
+#define SPEED_K              8.0f  // 弯道降速系数，越大弯道越慢
 
-// 传感器权重定义
-#define WEIGHT_L2           -5    // 最左侧传感器权重
-#define WEIGHT_L1           -3    // 左侧传感器权重  
-#define WEIGHT_M            0     // 中间传感器权重
-#define WEIGHT_R1           3     // 右侧传感器权重
-#define WEIGHT_R2           5     // 最右侧传感器权重
+// ================== 零点偏置 ==================
+// 如果跑直线时总是在“黑线右边”那条白带里，可以把这个数调成负的（例如 -0.5f）
+// 先保持 0.0f 跑一圈再说。
+#define POSITION_OFFSET      0.0f
 
-// 全局变量声明
+// ================== 传感器权重（对称分布） ==================
+#define WEIGHT_L2           -4.0f    // 最左侧传感器权重
+#define WEIGHT_L1           -2.0f    // 左侧传感器权重  
+#define WEIGHT_M             0.0f    // 中间传感器权重
+#define WEIGHT_R1            2.0f    // 右侧传感器权重
+#define WEIGHT_R2            4.0f    // 最右侧传感器权重
+
+// 十字路口计数
 extern unsigned char lukou_num;
 
 // 函数声明
 void Track_Init(void);
 void Advanced_Tracking(void);
-uint8_t Line_Protection_Check(void);
 
 #endif

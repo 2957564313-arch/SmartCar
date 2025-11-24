@@ -113,10 +113,7 @@ int main(void)
                 // 运行状态下执行循迹
                 if(car_started)
                 {
-                    // 读取传感器
-                    Sensor_Read();
-                    
-                    // 执行高级循迹算法
+                    // 传感器读取在 Advanced_Tracking 内部完成
                     Advanced_Tracking();
                 }
                 break;
