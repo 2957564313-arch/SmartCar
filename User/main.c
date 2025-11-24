@@ -126,6 +126,6 @@ int main(void)
                 break;
         }
         
-        Delay_ms(10);  // 10ms延时，控制循环频率
+        Delay_ms(5);  // 5ms延时，控制循环频率
     }
 }

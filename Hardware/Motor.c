@@ -1,9 +1,9 @@
-#include "stm32f10x.h"                  // Device header
+#include "stm32f10x.h"                  
 #include "Motor.h"
 #include <stdlib.h>
 
 /**
-  * @brief  电机初始化
+  * @brief  电机初始化 - 提高PWM频率
   */
 void Motor_Init(void)
 {
@@ -30,9 +30,9 @@ void Motor_Init(void)
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
     
-    // 初始化TIM2用于PWM输出
-    TIM_TimeBaseStructure.TIM_Period = 200 - 1;
-    TIM_TimeBaseStructure.TIM_Prescaler = 720 - 1;
+    // 提高PWM频率到10kHz，提高电机响应
+    TIM_TimeBaseStructure.TIM_Period = 100 - 1;        // 100级
+    TIM_TimeBaseStructure.TIM_Prescaler = 72 - 1;      // 72MHz/72 = 1MHz, 1MHz/100 = 10kHz
     TIM_TimeBaseStructure.TIM_ClockDivision = 0;
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
     TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
@@ -57,9 +57,7 @@ void Motor_Init(void)
 }
 
 /**
-  * @brief  设置电机速度
-  * @param  left_speed: 左电机速度(-100~100)
-  * @param  right_speed: 右电机速度(-100~100)
+  * @brief  设置电机速度 - 优化响应
   */
 void motor(int left_speed, int right_speed)
 {
@@ -69,9 +67,9 @@ void motor(int left_speed, int right_speed)
     if(right_speed > 100) right_speed = 100;
     if(right_speed < -100) right_speed = -100;
     
-    // 转换为PWM值 (0-199)
-    int left_pwm = abs(left_speed) * 2;
-    int right_pwm = abs(right_speed) * 2;
+    // 转换为PWM值 (0-99)
+    int left_pwm = abs(left_speed);
+    int right_pwm = abs(right_speed);
     
     // 左电机控制
     if(left_speed >= 0) {
@@ -96,9 +94,6 @@ void motor(int left_speed, int right_speed)
     }
 }
 
-/**
-  * @brief  停止电机
-  */
 void Motor_Stop(void)
 {
     GPIO_ResetBits(LEFT_MOTOR_AIN1_PORT, LEFT_MOTOR_AIN1_PIN);
