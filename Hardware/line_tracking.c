@@ -3,6 +3,9 @@
 #include "Motor.h"
 #include "PID.h"
 
+int STRAIGHT_SPEED = 100;          // 直线基础速度(65起步)
+int CORNER_SPEED_MIN = 28;         // 弯道时的最低基础速度
+
 // 十字路口计数
 unsigned char lukou_num = 0;
 

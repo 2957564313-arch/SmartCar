@@ -5,10 +5,8 @@
 #include "PID.h"
 
 // ================== 速度参数（可根据实际微调） ==================
-#define STRAIGHT_SPEED       100    // 直线基础速度
 #define MAX_SPEED            100   // motor() 的最大速度（对应 PWM 100）
 #define MIN_SPEED            0     // 最低速度（弯道内侧轮可降到 0）
-#define CORNER_SPEED_MIN     28    // 弯道时的最低基础速度
 #define SPEED_K              8.0f  // 弯道降速系数，越大弯道越慢
 
 // ================== 零点偏置 ==================
@@ -23,8 +21,11 @@
 #define WEIGHT_R1            2.0f    // 右侧传感器权重
 #define WEIGHT_R2            4.0f    // 最右侧传感器权重
 
+
 // 十字路口计数
 extern unsigned char lukou_num;
+extern int STRAIGHT_SPEED;
+extern int CORNER_SPEED_MIN;
 
 // 函数声明
 void Track_Init(void);
