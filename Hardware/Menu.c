@@ -88,24 +88,27 @@ void Show_CORNER_SPEED_Menu(void)
     OLED_Clear();
     OLED_ShowString(1, 1, "CORNER SPEED");
     OLED_ShowNum(2,2,CORNER_SPEED_MIN,2);
+	OLED_ShowFloat(3,2,SPEED_K,1,1);
 	
     if(edit_mode)
         OLED_ShowChar(1, 15, 'E');
     
     if(cursor_pos == 2)
         OLED_ShowChar(2, 1, '>');
+	if(cursor_pos == 3)
+        OLED_ShowChar(3, 1, '>');
 }
 
 void Handle_Key(uint8_t key)
 {
     if(key == 0) return;
     
-    // 如果已经发车过，不允许任何菜单操作
-    if(!Can_Launch())
-    {
-        Show_Main_Menu();
-        return;
-    }
+//    // 如果已经发车过，不允许任何菜单操作
+//    if(!Can_Launch())
+//    {
+//        Show_Main_Menu();
+//        return;
+//    }
     
     if(menu_state == 0)  // 主菜单
     {
@@ -273,10 +276,16 @@ void Handle_Key(uint8_t key)
     {
         if(edit_mode == 0)  // 浏览模式
         {
+			if(key == 1||key == 2)
+			{
+				cursor_pos = (cursor_pos == 2 ? 3 : 2);
+				Show_CORNER_SPEED_Menu();
+			}
             if(key == 3)  // 确认键 - 进入编辑
             {
                 edit_mode = 1;
                 Show_CORNER_SPEED_Menu();
+
             }
             else if(key == 4)  // BACK键 - 返回主菜单
             {
@@ -284,6 +293,7 @@ void Handle_Key(uint8_t key)
                 cursor_pos = 1;
                 Show_Main_Menu();
             }
+			
         }
         else  // 编辑模式
         {
@@ -294,18 +304,34 @@ void Handle_Key(uint8_t key)
             }
             else if(key == 1)  // 上键 - 增加数值
             {
-                CORNER_SPEED_MIN+=1;
+				if(cursor_pos == 2)
+				{
+					CORNER_SPEED_MIN+=1;
                 // 限制范围
                 if(CORNER_SPEED_MIN > 100)CORNER_SPEED_MIN  = 100;
-				if(CORNER_SPEED_MIN < 0)CORNER_SPEED_MIN  = 0;				
+				if(CORNER_SPEED_MIN < 0)CORNER_SPEED_MIN  = 0;
+				}
+				else
+				{
+					SPEED_K+=0.5;
+				}
+                				
                 Show_CORNER_SPEED_Menu();
             }
             else if(key == 2)  // 下键 - 减少数值
             {
-                CORNER_SPEED_MIN-=1;
+				if(cursor_pos == 2)
+				{
+				CORNER_SPEED_MIN-=1;
                 // 限制范围
 				if(CORNER_SPEED_MIN > 100)CORNER_SPEED_MIN  = 100;
-                if(CORNER_SPEED_MIN < 0)CORNER_SPEED_MIN  = 0;  
+                if(CORNER_SPEED_MIN < 0)CORNER_SPEED_MIN  = 0;  	
+				}
+				else
+				{
+					SPEED_K-=0.5;
+				}
+                
                 Show_CORNER_SPEED_Menu();
             }
         }

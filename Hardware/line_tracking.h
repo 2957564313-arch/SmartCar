@@ -7,11 +7,11 @@
 // ================== 速度参数（可根据实际微调） ==================
 #define MAX_SPEED            100   // motor() 的最大速度（对应 PWM 100）
 #define MIN_SPEED            0     // 最低速度（弯道内侧轮可降到 0）
-#define SPEED_K              8.0f  // 弯道降速系数，越大弯道越慢
+
 
 // ================== 零点偏置 ==================
 // 如果跑直线时总是在“黑线右边”那条白带里，可以把这个数调成负的（例如 -0.5f）
-// 先保持 0.0f 跑一圈再说。
+
 #define POSITION_OFFSET      0.0f
 
 // ================== 传感器权重（对称分布） ==================
@@ -26,6 +26,7 @@
 extern unsigned char lukou_num;
 extern int STRAIGHT_SPEED;
 extern int CORNER_SPEED_MIN;
+extern float SPEED_K;
 
 // 函数声明
 void Track_Init(void);

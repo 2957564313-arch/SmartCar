@@ -21,6 +21,8 @@ extern uint8_t edit_mode;
 // 函数声明
 void Show_Main_Menu(void);
 void Show_PID_Menu(void);
+void Show_STRAIGHT_SPEED_Menu(void);
+void Show_CORNER_SPEED_Menu(void);
 void Handle_Key(uint8_t key);
 void Start_Line_Tracking(void);
 uint8_t Can_Launch(void);

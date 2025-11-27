@@ -1,8 +1,7 @@
 #include "stm32f10x.h"
 #include "PID.h"
 
-// 初始 PID 参数（适合作为一个稳一点的起点）
-
+// 初始 PID 参数
 PID_TypeDef line_pid = {8.0f, 0.1f, 3.0f, 0.0f, 0.0f};
 
 /**
@@ -26,7 +25,7 @@ float PID_Calculate(PID_TypeDef *pid, float setpoint, float current_value)
 
     float output = proportional + integral + derivative;
 
-    // 输出限幅：收紧到 ±35，避免一次性拐太狠导致甩出线
+    // 输出限幅：避免一次性拐太狠导致甩出线
     if(output > 35.0f)  output = 35.0f;
     if(output < -35.0f) output = -35.0f;
 

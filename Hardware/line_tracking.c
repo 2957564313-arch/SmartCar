@@ -5,6 +5,7 @@
 
 int STRAIGHT_SPEED = 100;          // 直线基础速度(65起步)
 int CORNER_SPEED_MIN = 28;         // 弯道时的最低基础速度
+float SPEED_K = 8.0f;             // 弯道降速系数，越大弯道越慢
 
 // 十字路口计数
 unsigned char lukou_num = 0;
@@ -51,7 +52,7 @@ static float Calculate_Line_Position(void)
         // 上一次线在左边，往左找
         return WEIGHT_L2 - 1.0f;
     } else {
-        // 实在不知道，就先当居中
+        // 未知当居中
         return 0.0f;
     }
 }

@@ -10,7 +10,7 @@
 #define M_PORT    GPIOA
 #define R1_PIN    GPIO_Pin_5
 #define R1_PORT   GPIOA
-#define R2_PIN    GPIO_Pin_15  // 最右边传感器（修改为PA15）
+#define R2_PIN    GPIO_Pin_15  // 最右边传感器
 #define R2_PORT   GPIOA
 
 // 传感器数量
@@ -21,7 +21,7 @@ extern int L2, L1, M, R1, R2;
 
 void Sensor_Init(void);
 void Sensor_Read(void);
-unsigned char Get_Line_Status(void);
-unsigned char Detect_Crossroad(void);
+//unsigned char Get_Line_Status(void);
+//unsigned char Detect_Crossroad(void);
 
 #endif

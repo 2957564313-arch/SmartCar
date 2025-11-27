@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 /**
-  * @brief  电机初始化 - 提高PWM频率
+  * @brief  电机初始化 
   */
 void Motor_Init(void)
 {
